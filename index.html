@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Touche‑Tout – Boutique (HTML/CSS/JS only)</title>
+  <meta name="description" content="Touche‑Tout : e‑commerce sans backend. Panier localStorage + redirection WhatsApp pour finaliser la commande. Accueil, Boutique, À propos, Contact." />
+  <style>
+    :root{
+      --bg:#0f172a;/* slate-900 */
+      --card:#111827ee;/* gray-900 */
+      --muted:#94a3b8;/* slate-400 */
+      --text:#e5e7eb;/* gray-200 */
+      --accent:#22c55e;/* green-500 */
+      --accent-2:#16a34a;/* green-600 */
+      --danger:#ef4444;/* red-500 */
+      --ring:#334155;/* slate-700 */
+      --gold:#f59e0b;/* amber-500 */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial; background:linear-gradient(180deg,#0b1229,#0f172a 40%,#0b1229); color:var(--text)}
+    .container{max-width:1180px;margin-inline:auto;padding:24px}
+
+    /* Header/Nav */
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;position:sticky;top:0;background:linear-gradient(180deg,#0b1229f2,#0f172af2);backdrop-filter:blur(10px);z-index:30;border-bottom:1px solid #1f2937}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-logo{width:36px;height:36px;border-radius:12px;background:radial-gradient(circle at 30% 30%,#34d399,#22c55e 50%,#16a34a); box-shadow:0 6px 24px #22c55e44}
+    h1{font-size:20px;margin:0;letter-spacing:.3px}
+    nav{display:flex;gap:8px;flex-wrap:wrap}
+    nav a{padding:8px 12px;border-radius:10px;color:var(--text);text-decoration:none;border:1px solid transparent}
+    nav a.active, nav a:hover{border-color:var(--ring);background:#0b1229}
+
+    .search{flex:1;max-width:420px;display:flex;gap:8px}
+    .search input{flex:1;padding:10px 12px;border-radius:12px;border:1px solid var(--ring);background:#0b1229;color:var(--text)}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid transparent;background:var(--accent);color:#04120b;font-weight:700;cursor:pointer;box-shadow:0 8px 20px #22c55e33;transition:transform .15s ease}
+    .btn:hover{background:var(--accent-2);transform:translateY(-1px)}
+    .icon{width:18px;height:18px}
+
+    /* Animations */
+    @keyframes floatUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}50%{box-shadow:0 0 20px 6px rgba(34,197,94,.2)}}
+    .fade-in{animation:floatUp .5s ease both}
+
+    /* Sections generic */
+    .section{display:none;min-height:calc(100vh - 88px)}
+    .section.active{display:block}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:26px;align-items:center;padding-block:36px}
+    .hero h2{font-size:40px;line-height:1.1;margin:0 0 12px}
+    .hero p{color:var(--muted);font-size:18px;margin:0 0 16px}
+    .badges{display:flex;gap:10px;flex-wrap:wrap}
+    .badge{border:1px solid #1f2937;background:linear-gradient(180deg,#0c142c,#0f192f);color:var(--text);padding:8px 12px;border-radius:999px;font-weight:600}
+    .hero-card{border:1px solid #1f2937;background:linear-gradient(180deg,#0b1229,#0e162f);border-radius:18px;padding:16px;text-align:center;animation:pulseGlow 2.2s infinite}
+
+    /* Grid produits */
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    @media (max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:480px){.grid{grid-template-columns:1fr}}
+    .card{border:1px solid #1f2937;background:linear-gradient(180deg,#0b1229,#0e162f);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s ease}
+    .card:hover{transform:translateY(-3px)}
+    .card img{width:100%;aspect-ratio:1/1.0;object-fit:cover}
+    .card-body{padding:12px;display:flex;flex-direction:column;gap:8px}
+    .title{font-weight:800}
+    .muted{color:var(--muted);font-size:14px}
+    .price{font-weight:900}
+    .add{margin-top:auto}
+
+    /* Category filter */
+    .cats{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px}
+    .cats button{padding:8px 12px;border-radius:999px;border:1px solid #1f2937;background:#0b1229;color:var(--text);cursor:pointer}
+    .cats button.active{background:var(--accent);color:#04120b;border-color:transparent}
+
+    /* Cart Drawer */
+    .drawer{position:fixed;inset:0;display:none}
+    .drawer.open{display:block}
+    .drawer .backdrop{position:absolute;inset:0;background:#0008}
+    .panel{position:absolute;right:0;top:0;height:100%;width:min(480px,100%); background:#0b1229;border-left:1px solid #1f2937;display:flex;flex-direction:column}
+    .panel header{position:sticky;top:0;border-bottom:1px solid #1f2937}
+    .panel .content{padding:16px;display:flex;flex-direction:column;gap:14px;overflow:auto}
+    .cart-item{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;border:1px solid #1f2937;border-radius:14px;padding:8px;background:linear-gradient(180deg,#0c142c,#0f192f)}
+    .qty{display:flex;align-items:center;gap:8px}
+    .qty button{width:28px;height:28px;border-radius:8px;border:1px solid #1f2937;background:#0b1229;color:var(--text);cursor:pointer}
+    .qty input{width:48px;padding:6px;border-radius:8px;border:1px solid #1f2937;background:#0b1229;color:var(--text);text-align:center}
+    .line{display:flex;justify-content:space-between;color:var(--muted)}
+    .total{font-size:20px;font-weight:900;color:var(--text)}
+    form.checkout{display:grid;gap:10px;border:1px dashed #1f2937;border-radius:14px;padding:12px}
+    form.checkout input, form.checkout textarea{padding:10px 12px;border-radius:12px;border:1px solid #1f2937;background:#0b1229;color:var(--text)}
+    .danger{background:var(--danger);color:#160505}
+    .danger:hover{background:#dc2626}
+
+    footer{margin:0;padding:0}
+    .site-footer{margin-top:40px;background:#0b1229;border-top:1px solid #1f2937}
+    .footer-wrap{max-width:1180px;margin-inline:auto;padding:28px 24px;display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:20px}
+    @media (max-width:900px){.footer-wrap{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}}
+    @media (max-width:520px){.footer-wrap{grid-template-columns:1fr}}
+    .footer-brand{display:flex;gap:12px}
+    .footer-brand img{height:54px;border-radius:14px}
+    .footer-brand .brand-text{display:flex;flex-direction:column}
+    .footer-brand .brand-text .name{font-weight:900;font-size:18px}
+    .footer-brand .brand-text .slogan{color:var(--muted);font-size:14px}
+    .footer-col h4{margin:0 0 10px;font-size:14px;color:#cbd5e1;text-transform:uppercase;letter-spacing:.08em}
+    .footer-col a{display:block;padding:6px 0;color:var(--text);text-decoration:none}
+    .footer-col a:hover{text-decoration:underline}
+    .social{display:flex;gap:10px;margin-top:8px}
+    .social a{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid #1f2937;border-radius:10px;color:var(--text);text-decoration:none;background:linear-gradient(180deg,#0c142c,#0f192f)}
+    .social a:hover{border-color:var(--accent)}
+    .copyright{border-top:1px solid #1f2937;color:var(--muted);font-size:13px;text-align:center;padding:12px}
+    .newsletter{display:flex;gap:8px}
+    .newsletter input{flex:1;padding:10px 12px;border-radius:12px;border:1px solid var(--ring);background:#0b1229;color:var(--text)}
+    .newsletter button{white-space:nowrap}
+    .trust{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    @media (max-width:700px){.hero{grid-template-columns:1fr}.trust{grid-template-columns:1fr}}
+    .trust .t{border:1px solid #1f2937;background:linear-gradient(180deg,#0b1229,#0e162f);border-radius:16px;padding:14px}
+      /* Theme toggle button */
+    .theme-toggle{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid var(--ring);background:transparent;color:var(--text);cursor:pointer}
+    .theme-toggle:hover{background:rgba(148,163,184,.08)}
+
+    /* Light theme overrides */
+    [data-theme="light"]{
+      --bg:#ffffff;
+      --text:#0f172a;
+      --muted:#475569;
+      --ring:#e2e8f0;
+      --gold:#b45309;
+    }
+    [data-theme="light"] body{background:linear-gradient(180deg,#f8fafc,#ffffff 40%,#f8fafc)}
+    [data-theme="light"] header{background:linear-gradient(180deg,#ffffffee,#fff);border-bottom:1px solid #e2e8f0}
+    [data-theme="light"] nav a{color:var(--text)}
+    [data-theme="light"] nav a.active,[data-theme="light"] nav a:hover{background:#f1f5f9;border-color:#e2e8f0}
+    [data-theme="light"] .badge,[data-theme="light"] .hero-card,[data-theme="light"] .card,[data-theme="light"] .cart-item,[data-theme="light"] .panel,[data-theme="light"] .footer-wrap > div{background:linear-gradient(180deg,#ffffff,#f8fafc);border-color:#e2e8f0}
+    [data-theme="light"] .search input,[data-theme="light"] .newsletter input,[data-theme="light"] form.checkout input,[data-theme="light"] form.checkout textarea,[data-theme="light"] #contactForm{background:#ffffff;border-color:#e2e8f0;color:var(--text)}
+    [data-theme="light"] .site-footer{background:#ffffff;border-top:1px solid #e2e8f0}
+    [data-theme="light"] .social a{background:#ffffff;border-color:#e2e8f0}
+    [data-theme="light"] .drawer .backdrop{background:#0006}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="touche-tout-bridge-logo-simple.png" alt="Touche‑Tout" style="height:36px;border-radius:12px" onerror="this.replaceWith(document.querySelector('.brand-logo')||document.createElement('div'))">
+      <h1>Touche‑Tout</h1>
+    </div>
+    <nav>
+      <a href="#/" data-route>Accueil</a>
+      <a href="#/boutique" data-route>Boutique</a>
+      <a href="#/apropos" data-route>À propos</a>
+      <a href="#/contact" data-route>Contact</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:10px"><button id="themeToggle" class="theme-toggle" title="Basculer clair/sombre">🌙</button></div>
+    <div class="search">
+      <input id="search" placeholder="Rechercher un produit… (ex: lampe, TV, anti-goudron)" />
+    </div>
+    <button class="btn" id="openCart">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M3 3h2l.4 2M7 13h10l3-8H6.4"/><circle cx="9" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>
+      Panier (<span id="cartCount">0</span>)
+    </button>
+  </header>
+
+  <main class="container">
+    <!-- Accueil -->
+    <section id="page-home" class="section active">
+      <div class="hero">
+        <div class="fade-in" style="animation-delay:.05s">
+          <h2>Tout ce qu’il vous faut, <span style="color:var(--accent)">au meilleur prix</span>.</h2>
+          <p>Électronique, Auto & Moto, Maison, Beauté… Chez <strong>Touche‑Tout</strong>, on sélectionne des produits fiables, testés, livrés vite et bien. Commandez en 3 clics, finalisez sur WhatsApp.</p>
+          <div class="badges">
+            <span class="badge">Livraison rapide</span>
+            <span class="badge">Support 7j/7</span>
+            <span class="badge">Retours sous 7 jours</span>
+            <span class="badge">Paiement à la livraison</span>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn" href="#/boutique">Voir la boutique</a>
+            <a class="btn" style="background:linear-gradient(90deg,#22c55e,var(--gold));color:#05200f" href="#/apropos">Pourquoi nous choisir ?</a>
+          </div>
+        </div>
+        <div class="hero-card fade-in" style="animation-delay:.1s">
+          <div style="font-size:14px;color:var(--muted)">Offre du moment</div>
+          <div style="font-size:22px;font-weight:900;margin-top:6px">Box Android TV MXQ Pro 5G</div>
+          <div style="font-size:32px;font-weight:900;margin:6px 0">25 000 FCFA</div>
+          <div class="muted" style="margin-bottom:10px">Stock limité · Garantie 6 mois</div>
+          <a class="btn" href="#/boutique">J’en profite</a>
+        </div>
+      </div>
+
+      <div class="trust" style="margin-top:20px">
+        <div class="t"><strong>Fiabilité</strong><br><span class="muted">Des produits sélectionnés et vérifiés par notre équipe.</span></div>
+        <div class="t"><strong>Transparence</strong><br><span class="muted">Prix nets, sans frais cachés. Discussion directe via WhatsApp.</span></div>
+        <div class="t"><strong>Proximité</strong><br><span class="muted">Conseils personnalisés et SAV réactif, 7j/7.</span></div>
+      </div>
+    </section>
+
+    <!-- Boutique -->
+    <section id="page-shop" class="section">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <h2 style="margin:10px 0">Boutique</h2>
+        <div class="cats" id="catFilters"></div>
+      </div>
+      <section id="catalogue" class="grid"></section>
+    </section>
+
+    <!-- À propos -->
+    <section id="page-about" class="section">
+      <h2>À propos de Touche‑Tout</h2>
+      <p class="muted" style="max-width:800px">Nous sommes une équipe passionnée qui compare, teste et négocie pour vous proposer des produits polyvalents et durables. Notre mission : vous simplifier la vie au meilleur rapport qualité‑prix, avec un service client humain, rapide et efficace.</p>
+      <div class="trust" style="margin-top:14px">
+        <div class="t"><strong>Notre promesse</strong><br><span class="muted">Des prix justes et une sélection rigoureuse.</span></div>
+        <div class="t"><strong>Garantie sérénité</strong><br><span class="muted">Retours sous 7 jours si l’article ne vous convient pas.</span></div>
+        <div class="t"><strong>Service client</strong><br><span class="muted">Réponse sous 1h en journée, suivi de commande simple via WhatsApp.</span></div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="page-contact" class="section">
+      <h2>Contact</h2>
+      <p class="muted">Besoin d’un conseil, d’un devis, ou d’une commande spéciale ? Écrivez‑nous directement.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" class="fade-in">
+        <form id="contactForm" style="border:1px solid #1f2937;border-radius:16px;padding:14px;background:linear-gradient(180deg,#0b1229,#0e162f)">
+          <input id="ct_name" placeholder="Nom complet" required style="margin-bottom:8px;width:100%;padding:10px 12px;border-radius:12px;border:1px solid #1f2937;background:#0b1229;color:var(--text)" />
+          <input id="ct_phone" placeholder="Téléphone (WhatsApp)" required style="margin-bottom:8px;width:100%;padding:10px 12px;border-radius:12px;border:1px solid #1f2937;background:#0b1229;color:var(--text)" />
+          <input id="ct_subject" placeholder="Sujet" style="margin-bottom:8px;width:100%;padding:10px 12px;border-radius:12px;border:1px solid #1f2937;background:#0b1229;color:var(--text)" />
+          <textarea id="ct_message" rows="4" placeholder="Votre message" style="width:100%;padding:10px 12px;border-radius:12px;border:1px solid #1f2937;background:#0b1229;color:var(--text)"></textarea>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="btn" type="submit">Écrire sur WhatsApp</button>
+            <a class="btn" href="mailto:contact@touchetout.com">Envoyer un e‑mail</a>
+          </div>
+        </form>
+        <div style="border:1px solid #1f2937;border-radius:16px;padding:14px;background:linear-gradient(180deg,#0b1229,#0e162f)">
+          <strong>Infos utiles</strong>
+          <ul class="muted">
+            <li>WhatsApp: +228 xx xx xx xx</li>
+            <li>Horaires: Lun‑Sam, 8h‑20h</li>
+            <li>Livraison: Grand Lomé & villes partenaires</li>
+          </ul>
+          <div class="badge" style="display:inline-flex;align-items:center;gap:8px;margin-top:8px">Paiement à la livraison</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-wrap">
+      <div class="footer-brand">
+        <img src="touche-tout-bridge-logo-simple.png" alt="Touche‑Tout" onerror="this.style.display='none'">
+        <div class="brand-text">
+          <div class="name">Touche‑Tout</div>
+          <div class="slogan">Tout, simplement mieux.</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Menus rapides</h4>
+        <a href="#/">Accueil</a>
+        <a href="#/boutique">Boutique</a>
+        <a href="#/apropos">À propos</a>
+        <a href="#/contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Catégories</h4>
+        <a href="#/boutique" onclick="location.hash='#/boutique'">Électronique</a>
+        <a href="#/boutique" onclick="location.hash='#/boutique'">Automobile</a>
+        <a href="#/boutique" onclick="location.hash='#/boutique'">Maison</a>
+        <a href="#/boutique" onclick="location.hash='#/boutique'">Beauté</a>
+      </div>
+      <div class="footer-col">
+        <h4>Restez informé</h4>
+        <div class="newsletter">
+          <input id="nl_email" placeholder="Votre e‑mail"/>
+          <button class="btn" id="nl_btn">S’abonner</button>
+        </div>
+        <div class="social">
+          <a href="#" aria-label="WhatsApp" title="WhatsApp">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3 21l2.2-4.7A8.5 8.5 0 1 1 20.5 11.5z"/><path stroke-width="2" d="M16.5 14.5c-.6 1.1-3.1.2-5-1.6-1.8-1.9-2.7-4.4-1.6-5"/></svg>
+          </a>
+          <a href="#" aria-label="Facebook" title="Facebook">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M18 2h-3a4 4 0 0 0-4 4v3H8v4h3v9h4v-9h3l1-4h-4V6a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram" title="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="copyright">© <span id="year"></span> Touche‑Tout — Tous droits réservés.</div>
+  </footer>
+
+
+  <!-- Drawer Panier -->
+  <div class="drawer" id="drawer">
+    <div class="backdrop" id="closeCart" aria-label="Fermer"></div>
+    <div class="panel">
+      <header class="container" style="padding:12px 16px">
+        <h2 style="margin:0;font-size:18px">Votre panier</h2>
+        <button class="btn danger" id="clearCart">Vider</button>
+      </header>
+      <div class="content">
+        <div id="cartItems" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div class="line"><span>Sous-total</span><strong id="subtotal">0</strong></div>
+        <div class="line"><span>Livraison</span><span class="muted">À confirmer</span></div>
+        <div class="line total"><span>Total</span><span id="total">0</span></div>
+
+        <form class="checkout" id="checkoutForm">
+          <strong>Infos client</strong>
+          <input id="c_name" placeholder="Nom complet" required />
+          <input id="c_phone" placeholder="Téléphone (WhatsApp)" required />
+          <textarea id="c_address" rows="2" placeholder="Adresse / Quartier / Ville"></textarea>
+          <button class="btn" type="submit">Commander via WhatsApp</button>
+        </form>
+        <small class="muted">Vous serez redirigé vers WhatsApp avec le récapitulatif pré‑rempli.</small>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === CONFIG ===
+    const SHOP = {
+      brand: 'Touche‑Tout',
+      currency: 'XOF',
+      whatsappPhone: '22890000000', // Remplacer par votre numéro (sans +)
+      messageHeader: 'Nouvelle commande depuis Touche‑Tout',
+      categories: ['Tous','Électronique','Automobile','Maison','Beauté'],
+      products: [
+        {id:'mxq-pro', name:'Box Android TV – MXQ Pro 5G', price: 25000, cat:'Électronique', image:'https://images.unsplash.com/photo-1593359677879-88e151a76da5?q=80&w=800&auto=format&fit=crop'},
+        {id:'rose-lampe', name:'Lampe solaire rose multicolore (x2)', price: 6000, cat:'Maison', image:'https://images.unsplash.com/photo-1593167481018-c6d32fc19489?q=80&w=800&auto=format&fit=crop'},
+        {id:'anti-goudron', name:'Anti-goudron pour fumeurs – 30ml', price: 4500, cat:'Beauté', image:'https://images.unsplash.com/photo-1535914254981-b5012eebbd15?q=80&w=800&auto=format&fit=crop'},
+        {id:'libertex', name:'Crème Libertex – soin raffermissant', price: 12000, cat:'Beauté', image:'https://images.unsplash.com/photo-1604908176997-431b43d9f140?q=80&w=800&auto=format&fit=crop'},
+        {id:'dashcam', name:'Dashcam Full HD – Grand angle', price: 19500, cat:'Automobile', image:'https://images.unsplash.com/photo-1516873240891-4bf0140b3e88?q=80&w=800&auto=format&fit=crop'},
+        {id:'chargeur-auto', name:'Chargeur voiture 2xUSB 36W', price: 5500, cat:'Automobile', image:'https://images.unsplash.com/photo-1593941707882-a5bba14938c3?q=80&w=800&auto=format&fit=crop'},
+        {id:'powerbank', name:'Powerbank 20 000 mAh', price: 15000, cat:'Électronique', image:'https://images.unsplash.com/photo-1611175694989-d2b97c5b43da?q=80&w=800&auto=format&fit=crop'},
+        {id:'ampoule-led', name:'Ampoule LED E27 – 12W', price: 1200, cat:'Maison', image:'https://images.unsplash.com/photo-1484887609840-0b745c1b4ca7?q=80&w=800&auto=format&fit=crop'}
+      ]
+    }
+
+    // Utils
+    const fmt = new Intl.NumberFormat('fr-FR', {style:'currency', currency: SHOP.currency});
+    const el = sel => document.querySelector(sel);
+    const els = sel => [...document.querySelectorAll(sel)];
+    const routeLinks = els('[data-route]');
+
+    // Routing
+    const routes = {
+      '#/': 'page-home',
+      '#/boutique': 'page-shop',
+      '#/apropos': 'page-about',
+      '#/contact': 'page-contact'
+    }
+    const activateRoute = ()=>{
+      const hash = location.hash || '#/';
+      routeLinks.forEach(a=> a.classList.toggle('active', a.getAttribute('href')===hash));
+      Object.values(routes).forEach(id=> el('#'+id).classList.remove('active'));
+      const pageId = routes[hash] || 'page-home';
+      el('#'+pageId).classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+    window.addEventListener('hashchange', activateRoute);
+
+    // State Panier (localStorage)
+    const CART_KEY = 'shop_cart_v1';
+    let cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    const saveCart = ()=> localStorage.setItem(CART_KEY, JSON.stringify(cart));
+
+    // Catalogue rendering with category + search
+    const $catalogue = el('#catalogue');
+    const $catFilters = el('#catFilters');
+    let currentCat = 'Tous';
+
+    const renderCats = ()=>{
+      $catFilters.innerHTML = SHOP.categories.map(c=>`<button data-cat="${c}" class="${c===currentCat?'active':''}">${c}</button>`).join('');
+      els('#catFilters button').forEach(b=> b.addEventListener('click', ()=>{ currentCat=b.dataset.cat; renderCats(); renderCatalogue(el('#search').value); }));
+    }
+
+    const renderCatalogue = (filter='')=>{
+      const f = (filter||'').trim().toLowerCase();
+      const items = SHOP.products
+        .filter(p => (currentCat==='Tous' || p.cat===currentCat))
+        .filter(p => p.name.toLowerCase().includes(f));
+      $catalogue.innerHTML = items.map(p => `
+        <article class="card fade-in">
+          <img src="${p.image}" alt="${p.name}">
+          <div class="card-body">
+            <div class="title">${p.name}</div>
+            <div class="muted">${p.cat} · En stock</div>
+            <div class="price">${fmt.format(p.price)}</div>
+            <button class="btn add" data-id="${p.id}">Ajouter</button>
+          </div>
+        </article>
+      `).join('');
+      els('.add').forEach(b=> b.addEventListener('click', ()=> addToCart(b.dataset.id)));
+    }
+
+    // Panier helpers
+    const getItem = id => SHOP.products.find(p=>p.id===id);
+    const addToCart = id => {
+      const idx = cart.findIndex(i=>i.id===id);
+      if(idx>-1) cart[idx].qty += 1; else cart.push({id, qty:1});
+      saveCart();
+      renderCart();
+      openDrawer();
+    }
+    const removeFromCart = id => { cart = cart.filter(i=>i.id!==id); saveCart(); renderCart(); }
+    const setQty = (id, qty)=>{ const item = cart.find(i=>i.id===id); if(!item) return; item.qty = Math.max(1, qty|0); saveCart(); renderCart(); }
+
+    const totals = ()=>{
+      const subtotal = cart.reduce((s,i)=> s + getItem(i.id).price * i.qty, 0);
+      return { subtotal, total: subtotal } // livraison à confirmer
+    }
+
+    const renderCart = ()=>{
+      el('#cartCount').textContent = cart.reduce((s,i)=> s+i.qty, 0);
+      const $items = el('#cartItems');
+      if(cart.length===0){
+        $items.innerHTML = `<div class="muted">Votre panier est vide.</div>`;
+        el('#subtotal').textContent = fmt.format(0);
+        el('#total').textContent = fmt.format(0);
+        return;
+      }
+      $items.innerHTML = cart.map(i=>{
+        const p = getItem(i.id);
+        const line = p.price * i.qty;
+        return `
+          <div class="cart-item fade-in">
+            <img src="${p.image}" alt="${p.name}" style="width:64px;height:64px;object-fit:cover;border-radius:10px">
+            <div>
+              <div style="font-weight:800">${p.name}</div>
+              <div class="muted">${fmt.format(p.price)} × ${i.qty} = <strong>${fmt.format(line)}</strong></div>
+              <div class="qty" style="margin-top:6px">
+                <button aria-label="Moins" data-act="dec" data-id="${i.id}">−</button>
+                <input value="${i.qty}" data-id="${i.id}" />
+                <button aria-label="Plus" data-act="inc" data-id="${i.id}">+</button>
+              </div>
+            </div>
+            <button class="btn danger" data-act="del" data-id="${i.id}">Suppr.</button>
+          </div>
+        `
+      }).join('');
+      const t = totals();
+      el('#subtotal').textContent = fmt.format(t.subtotal);
+      el('#total').textContent = fmt.format(t.total);
+
+      // bind actions
+      els('.cart-item button').forEach(b=>{
+        const id = b.dataset.id; const act = b.dataset.act;
+        if(act==='del') b.onclick = ()=> removeFromCart(id);
+        if(act==='inc') b.onclick = ()=> setQty(id, (cart.find(i=>i.id===id)?.qty||1)+1);
+        if(act==='dec') b.onclick = ()=> setQty(id, (cart.find(i=>i.id===id)?.qty||1)-1);
+      });
+      els('.cart-item input').forEach(inp=> inp.addEventListener('change', ()=> setQty(inp.dataset.id, parseInt(inp.value||'1',10))));
+    }
+
+    // Drawer controls
+    const drawer = el('#drawer');
+    const openDrawer = ()=> drawer.classList.add('open');
+    const closeDrawer = ()=> drawer.classList.remove('open');
+
+    // Search
+    el('#search').addEventListener('input', (e)=> renderCatalogue(e.target.value));
+
+    // Header buttons
+    el('#openCart').addEventListener('click', openDrawer);
+    el('#closeCart').addEventListener('click', closeDrawer);
+    el('#clearCart').addEventListener('click', ()=>{ cart=[]; saveCart(); renderCart(); });
+
+    // Checkout -> WhatsApp
+    el('#checkoutForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      if(cart.length===0){ alert('Votre panier est vide.'); return; }
+      const name = el('#c_name').value.trim();
+      const phone = el('#c_phone').value.trim();
+      const addr = el('#c_address').value.trim();
+      const lines = cart.map(i=>{ const p = getItem(i.id); return `• ${p.name} x${i.qty} = ${fmt.format(p.price*i.qty)}` }).join('%0A');
+      const t = totals();
+      const msg = [
+        `*${SHOP.messageHeader}*`,
+        `Nom: ${name}`,
+        `Téléphone: ${phone}`,
+        addr?`Adresse: ${addr}`:null,
+        '',
+        '*Détails de la commande*',
+        lines,
+        `Total: ${fmt.format(t.total)}`,
+        '',
+        'Mode de paiement: À convenir',
+      ].filter(Boolean).join('%0A');
+      const url = `https://wa.me/${SHOP.whatsappPhone}?text=${msg}`;
+      window.open(url, '_blank');
+    });
+
+    // Contact -> WhatsApp
+    el('#contactForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const n=el('#ct_name').value.trim();
+      const p=el('#ct_phone').value.trim();
+      const s=(el('#ct_subject').value||'Demande').trim();
+      const m=(el('#ct_message').value||'').trim();
+      const msg = encodeURIComponent(`*Contact ${SHOP.brand}*
+Nom: ${n}
+Téléphone: ${p}
+Sujet: ${s}
+
+${m}`);
+      window.open(`https://wa.me/${SHOP.whatsappPhone}?text=${msg}`,'_blank');
+    });
+
+    // Thème clair/sombre
+    const applyTheme = (t)=>{
+      document.documentElement.setAttribute('data-theme', t);
+      const btn = document.getElementById('themeToggle');
+      if(btn){ btn.textContent = t==='light' ? '☀️' : '🌙'; }
+      localStorage.setItem('theme', t);
+    }
+    const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    applyTheme(currentTheme);
+    document.getElementById('themeToggle')?.addEventListener('click', ()=>{
+      applyTheme(document.documentElement.getAttribute('data-theme')==='light' ? 'dark' : 'light');
+    });
+
+    // Init
+    renderCats();
+    renderCatalogue('');
+    renderCart();
+    activateRoute();
+    el('#year').textContent = new Date().getFullYear();
+      // Newsletter (frontend uniquement)
+    const nlBtn = document.getElementById('nl_btn');
+    if(nlBtn){
+      nlBtn.addEventListener('click', ()=>{
+        const v = (document.getElementById('nl_email').value||'').trim();
+        if(!v){ alert('Entrez votre e‑mail.'); return; }
+        alert('Merci ! Nous vous tiendrons informé(e) des offres.');
+        document.getElementById('nl_email').value='';
+      });
+    }
+  </script>
+</body>
+</html>

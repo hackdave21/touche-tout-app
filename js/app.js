@@ -6,14 +6,14 @@
       messageHeader: 'Nouvelle commande depuis Touche‑Tout',
       categories: ['Tous','Électronique','Automobile','Maison','Beauté'],
       products: [
-        {id:'mxq-pro', name:'Box Android TV – MXQ Pro 5G', price: 25000, cat:'Électronique', image:'https://images.unsplash.com/photo-1593359677879-88e151a76da5?q=80&w=800&auto=format&fit=crop'},
-        {id:'rose-lampe', name:'Lampe solaire rose multicolore (x2)', price: 6000, cat:'Maison', image:'https://images.unsplash.com/photo-1593167481018-c6d32fc19489?q=80&w=800&auto=format&fit=crop'},
-        {id:'anti-goudron', name:'Anti-goudron pour fumeurs – 30ml', price: 4500, cat:'Beauté', image:'https://images.unsplash.com/photo-1535914254981-b5012eebbd15?q=80&w=800&auto=format&fit=crop'},
-        {id:'libertex', name:'Crème Libertex – soin raffermissant', price: 12000, cat:'Beauté', image:'https://images.unsplash.com/photo-1604908176997-431b43d9f140?q=80&w=800&auto=format&fit=crop'},
-        {id:'dashcam', name:'Dashcam Full HD – Grand angle', price: 19500, cat:'Automobile', image:'https://images.unsplash.com/photo-1516873240891-4bf0140b3e88?q=80&w=800&auto=format&fit=crop'},
-        {id:'chargeur-auto', name:'Chargeur voiture 2xUSB 36W', price: 5500, cat:'Automobile', image:'https://images.unsplash.com/photo-1593941707882-a5bba14938c3?q=80&w=800&auto=format&fit=crop'},
-        {id:'powerbank', name:'Powerbank 20 000 mAh', price: 15000, cat:'Électronique', image:'https://images.unsplash.com/photo-1611175694989-d2b97c5b43da?q=80&w=800&auto=format&fit=crop'},
-        {id:'ampoule-led', name:'Ampoule LED E27 – 12W', price: 1200, cat:'Maison', image:'https://images.unsplash.com/photo-1484887609840-0b745c1b4ca7?q=80&w=800&auto=format&fit=crop'}
+        {id:'mxq-pro', name:'Box Android TV – MXQ Pro 5G', price: 25000, cat:'Électronique', image:'assets/images/tv.jpeg'},
+        {id:'rose-lampe', name:'Lampe solaire rose multicolore (x2)', price: 6000, cat:'Maison', image:'assets/images/lampe.webp'},
+        {id:'anti-goudron', name:'Anti-goudron pour fumeurs – 30ml', price: 4500, cat:'Beauté', image:'assets/images/medoc.jpeg'},
+        {id:'libertex', name:'Crème Libertex – soin raffermissant', price: 12000, cat:'Beauté', image:'assets/images/creme.jpeg'},
+        {id:'dashcam', name:'Dashcam Full HD – Grand angle', price: 19500, cat:'Automobile', image:'assets/images/camera.jpeg'},
+        {id:'chargeur-auto', name:'Chargeur voiture 2xUSB 36W', price: 5500, cat:'Automobile', image:'assets/images/chargeur.jpeg'},
+        {id:'powerbank', name:'Powerbank 20 000 mAh', price: 15000, cat:'Électronique', image:'assets/images/power.jpeg'},
+        {id:'ampoule-led', name:'Ampoule LED E27 – 12W', price: 1200, cat:'Maison', image:'assets/images/ampoule.jpeg'}
       ]
     }
 

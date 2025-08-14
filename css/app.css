@@ -173,3 +173,5 @@ header { flex-wrap: wrap; }
     [data-theme="light"] .site-footer{background:#ffffff;border-top:1px solid #e2e8f0}
     [data-theme="light"] .social a{background:#ffffff;border-color:#e2e8f0}
     [data-theme="light"] .drawer .backdrop{background:#0006}
+    [data-theme="light"] .footer-col h4{color:#0b1229;}
+    [data-theme="light"] .social a:hover{border-color:var(--accent)}

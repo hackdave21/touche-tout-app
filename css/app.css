@@ -14,6 +14,11 @@
 header { flex-wrap: wrap; }
 @media (max-width: 800px) {
   .search { order: 3; width: 100%; max-width: none; margin-top: 8px; }
+   #page-about .about-block,
+  #page-about .about-block.reverse {
+    grid-template-columns: 1fr;
+    direction: ltr;
+  }
 }
 @media (max-width: 520px) {
   .btn { width: 100%; }
@@ -154,6 +159,43 @@ header { flex-wrap: wrap; }
       /* Theme toggle button */
     .theme-toggle{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid var(--ring);background:transparent;color:var(--text);cursor:pointer}
     .theme-toggle:hover{background:rgba(148,163,184,.08)}
+
+    /* Mise en page alternée "À propos" */
+#page-about .about-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+#page-about .about-block.reverse {
+  grid-template-columns: 1fr 1fr;
+  direction: rtl; /* inverse l'ordre visuel */
+}
+#page-about .about-block.reverse .about-text {
+  direction: ltr; /* rétablit le sens du texte */
+}
+
+#page-about .about-text h2 {
+  margin-top: 0;
+}
+#page-about .about-img img {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid #1f2937;
+  background: linear-gradient(180deg,#0b1229,#0e162f);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+/* Animation d'apparition */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: fadeSlide 0.8s ease both;
+}
+
 
     /* Light theme overrides */
     [data-theme="light"]{

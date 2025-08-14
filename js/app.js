@@ -1,6 +1,6 @@
 // === CONFIG ===
     const SHOP = {
-      brand: 'Touche‑Tout',
+      brand: 'Touche-Tout',
       currency: 'XOF',
       whatsappPhone: '22893617132', 
       messageHeader: 'Nouvelle commande depuis Touche‑Tout',

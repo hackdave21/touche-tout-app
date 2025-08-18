@@ -1,21 +1,21 @@
 // === CONFIG ===
     const SHOP = {
-      brand: 'Touche-Tout',
-      currency: 'XOF',
-      whatsappPhone: '22893617132', 
-      messageHeader: 'Nouvelle commande depuis Touche‑Tout',
-      categories: ['Tous','Électronique','Automobile','Maison','Beauté'],
-      products: [
-        {id:'mxq-pro', name:'Box Android TV – MXQ Pro 5G', price: 25000, cat:'Électronique', image:'assets/images/tv.jpeg'},
-        {id:'rose-lampe', name:'Lampe solaire rose multicolore (x2)', price: 6000, cat:'Maison', image:'assets/images/lampe.webp'},
-        {id:'anti-goudron', name:'Anti-goudron pour fumeurs – 30ml', price: 4500, cat:'Beauté', image:'assets/images/medoc.jpeg'},
-        {id:'libertex', name:'Crème Libertex – soin raffermissant', price: 12000, cat:'Beauté', image:'assets/images/creme.jpeg'},
-        {id:'dashcam', name:'Dashcam Full HD – Grand angle', price: 19500, cat:'Automobile', image:'assets/images/camera.jpeg'},
-        {id:'chargeur-auto', name:'Chargeur voiture 2xUSB 36W', price: 5500, cat:'Automobile', image:'assets/images/chargeur.jpeg'},
-        {id:'powerbank', name:'Powerbank 20 000 mAh', price: 15000, cat:'Électronique', image:'assets/images/power.jpeg'},
-        {id:'ampoule-led', name:'Ampoule LED E27 – 12W', price: 1200, cat:'Maison', image:'assets/images/ampoule.jpeg'}
-      ]
-    }
+  brand: 'Touche-Tout',
+  currency: 'XOF',
+  whatsappPhone: '22893617132', 
+  messageHeader: 'Nouvelle commande depuis Touche‑Tout',
+  categories: ['Tous','Électronique','Maison','Vêtement'],
+  products: [
+    {id:'extracteur-jus', name:'Extracteur de jus', price: 45000, cat:'Électronique', image:'assets/images/produits/extracteur.jpg'},
+    {id:'presse-jus', name:'Presse jus manuel', price: 35000, cat:'Maison', image:'assets/images/produits/presse.jpg'},
+    {id:'ceinture-double-face', name:'Ceinture double face', price: 9000, cat:'Vêtement', image:'assets/images/produits/ceinture.jpg'},
+    {id:'table-massage-bois', name:'Table de massage (pieds en bois)', price: 75000, cat:'Maison', image:'assets/images/produits/table.jpg'},
+    {id:'table-massage-fer', name:'Table de massage (pieds en fer)', price: 85000, cat:'Maison', image:'assets/images/produits/table.jpg'},
+    {id:'grille-pain', name:'Grille pain', price: 12500, cat:'Électronique', image:'assets/images/produits/grille.jpg'},
+    {id:'machine-petit-dejeuner', name:'Machine à petit déjeuner 3in1', price: 43000, cat:'Électronique', image:'assets/images/produits/machine.jpg'}
+  ]
+}
+
 
     // Utils
     const fmt = new Intl.NumberFormat('fr-FR', {style:'currency', currency: SHOP.currency});
@@ -110,9 +110,9 @@
               <div style="font-weight:800">${p.name}</div>
               <div class="muted">${fmt.format(p.price)} × ${i.qty} = <strong>${fmt.format(line)}</strong></div>
               <div class="qty" style="margin-top:6px">
-                <button aria-label="Moins" data-act="dec" data-id="${i.id}">−</button>
+                <button class="signe" aria-label="Moins" data-act="dec" data-id="${i.id}">−</button>
                 <input value="${i.qty}" data-id="${i.id}" />
-                <button aria-label="Plus" data-act="inc" data-id="${i.id}">+</button>
+                <button class="signe" aria-label="Plus" data-act="inc" data-id="${i.id}">+</button>
               </div>
             </div>
             <button class="btn danger" data-act="del" data-id="${i.id}">Suppr.</button>

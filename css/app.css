@@ -669,9 +669,24 @@ header {
 [data-theme="light"] .social a:hover {
   border-color: var(--accent);
 }
+
+[data-theme="light"] .copyright {
+  color: blackphp;
+}
+
 [data-theme="light"] .signe {
   color: white;
 }
+
 [data-theme="light"] .muted {
-  color: #0000;
+  color: #6c757d ; 
+}
+[data-theme="dark"] .muted {
+  color: var(--muted);
+}
+[data-theme="light"] .titre {
+  color: white;
+}
+[data-theme="light"] .parac {
+    color: black;
 }

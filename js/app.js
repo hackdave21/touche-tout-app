@@ -111,7 +111,7 @@
               <div class="muted">${fmt.format(p.price)} × ${i.qty} = <strong>${fmt.format(line)}</strong></div>
               <div class="qty" style="margin-top:6px">
                 <button class="signe" aria-label="Moins" data-act="dec" data-id="${i.id}">−</button>
-                <input value="${i.qty}" data-id="${i.id}" />
+                <input  class="muted" value="${i.qty}" data-id="${i.id}" />
                 <button class="signe" aria-label="Plus" data-act="inc" data-id="${i.id}">+</button>
               </div>
             </div>
